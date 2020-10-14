@@ -1,4 +1,4 @@
-{-| 
+{-|
 Module      :  Text.Regex.TDFA.Text
 Copyright   :  Chris Kuklewicz 2007-2009, shelarcy 2012
 License     :  BSD-style (see the file LICENSE)
@@ -9,7 +9,7 @@ Portability :  GHC (uses text)
 
 This modules provides 'RegexMaker' and 'RegexLike' instances for using
 'Text' with the TDFA backend ("Text.Regex.TDFA.NewDFA.Engine" and
-"Text.Regex.TDFA.NewDFA.Tester"). 
+"Text.Regex.TDFA.NewDFA.Tester").
 
 This exports instances of the high level API and the medium level
 API of 'compile','execute', and 'regexec'.
@@ -24,7 +24,7 @@ module Text.Regex.TDFA.Text(
  ) where
 
 import Data.Array((!),elems)
-import qualified Data.Text as T(Text,empty,take,drop,uncons,unpack)
+import qualified Data.Text as T(Text,unpack)
 
 import Text.Regex.Base(RegexLike(..),RegexMaker(..),Extract(..),MatchArray,RegexContext(..))
 import Text.Regex.Base.Impl(polymatch,polymatchM)
@@ -34,16 +34,9 @@ import Text.Regex.TDFA.TDFA(patternToRegex)
 import Text.Regex.TDFA.Common(Regex(..),CompOption,ExecOption(captureGroups),Position)
 
 import Data.Maybe(listToMaybe)
-import Text.Regex.TDFA.NewDFA.Uncons(Uncons(uncons))
+import Text.Regex.TDFA.NewDFA.Uncons(Uncons)
 import qualified Text.Regex.TDFA.NewDFA.Engine as Engine(execMatch)
 import qualified Text.Regex.TDFA.NewDFA.Tester as Tester(matchTest)
-
-instance Extract T.Text where
-  before = T.take; after = T.drop; empty = T.empty
-
-instance Uncons T.Text where
-  {- INLINE uncons #-}
-  uncons = T.uncons
 
 instance RegexContext Regex T.Text T.Text where
   match = polymatch
@@ -66,7 +59,7 @@ instance RegexLike Regex T.Text where
   matchCount r s = length (matchAll r' s)
     where r' = r { regex_execOptions = (regex_execOptions r) {captureGroups = False} }
   matchTest = myMatchTest
-  matchOnceText regex source = 
+  matchOnceText regex source =
     fmap (\ma -> let (o,l) = ma!0
                  in (before o source
                     ,fmap (\ol -> (extract ol source,ol)) ma
